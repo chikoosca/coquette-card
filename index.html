@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coquette Garden Studio 🎀</title>
+    
+    <!-- Tailwind CSS untuk tata letak modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTML2Canvas untuk fitur simpan gambar otomatis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Google Fonts: Mengambil font kaligrafi anggun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Monsieur+La+Doulaise&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* Font utama untuk isi teks agar tetap mudah dibaca */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #EBF7EE;
+            background-image: radial-gradient(#C6EBC9 1px, transparent 1px);
+            background-size: 24px 24px;
+            overflow-x: hidden;
+        }
+        
+        /* Font Kaligrafi */
+        .font-script {
+            font-family: 'Alex Brush', cursive;
+        }
+        .font-script-vintage {
+            font-family: 'Monsieur La Doulaise', cursive;
+        }
+
+        .lace-border {
+            background-image: radial-gradient(circle, transparent 5px, #fff 5px);
+            background-size: 14px 14px;
+        }
+
+        /* Animasi Kelopak Bunga Berguguran pada Opening */
+        .flower-petal {
+            position: absolute;
+            background: rgba(255, 192, 203, 0.6);
+            border-radius: 150% 0 150% 150%;
+            animation: v-fall linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes v-fall {
+            0% { top: -5%; transform: translateX(0) rotate(0deg); opacity: 1; }
+            100% { top: 105%; transform: translateX(100px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 1s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
+
+    <!-- ================= SCENE 1: OPENING SCREEN (TEMA BUNGA) ================= -->
+    <div id="openingScreen" class="fixed inset-0 bg-[#E8F5E9] z-50 flex flex-col items-center justify-center text-center p-6 transition-all duration-1000">
+        <!-- Wadah untuk animasi kelopak bunga jatuh -->
+        <div id="petalContainer" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+        
+        <div class="relative z-10 space-y-4 max-w-sm animate-fade-in">
+            <span class="text-5xl block animate-pulse">🌸 * 🌿 * 🌸</span>
+            <h1 class="font-script-vintage text-7xl text-emerald-900 leading-tight">Welcome to</h1>
+            <h2 class="font-script text-5xl text-emerald-800 -mt-2">Fairy Coquette Studio</h2>
+            <p class="text-xs text-emerald-700 tracking-widest uppercase mt-4">Ketuk pita untuk merangkai ucapan cantarmu</p>
+            
+            <button onclick="enterWebsite()" class="mt-6 inline-block bg-white text-emerald-800 border-2 border-[#B7E4C7] px-6 py-3 rounded-full text-sm font-bold shadow-sm hover:bg-[#D8F3DC] hover:scale-105 transition-all duration-300 cursor-pointer">
+                Enter Studio 🎀
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ================= SCENE 2: HALAMAN UTAMA WEBSITE ================= -->
+    <div id="mainContent" class="w-full max-w-5xl hidden opacity-0 transition-all duration-1000">
+        
+        <!-- Header -->
+        <header class="text-center mb-8 max-w-md mx-auto">
+            <span class="text-3xl">🎀 🩰 🌿</span>
+            <h1 class="text-5xl font-script text-emerald-950 font-bold mt-1">Coquette Card Maker</h1>
+            <p class="text-[11px] uppercase text-emerald-700 tracking-widest mt-1">Sentuhan Hijau Pastel & Kaligrafi Estetik</p>
+        </header>
+
+        <!-- Konten Utama (Grid) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            
+            <!-- Panel Kontrol (Kiri) -->
+            <section class="bg-[#F3FAF5] p-6 rounded-[2.5rem] shadow-sm border-2 border-[#D6EFE0] space-y-5">
+                <h2 class="text-base font-bold text-emerald-900 flex items-center gap-2 tracking-wide uppercase">
+                    <span>🪄</span> Pengaturan Kartu
+                </h2>
+                
+                <!-- Pilihan Kategori -->
+                <div>
+                    <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Jenis Ucapan:</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="changeTheme('thanks')" class="py-2 px-1 bg-[#D8F3DC] text-emerald-900 rounded-2xl text-xs font-bold border-2 border-[#B7E4C7] hover:bg-[#B7E4C7] transition-all">Terima Kasih</button>
+                        <button onclick="changeTheme('love')" class="py-2 px-1 bg-[#FFE3E3] text-[#A64B2A] rounded-2xl text-xs font-bold border-2 border-[#FFCCD5] hover:bg-[#FFCCD5] transition-all">Cinta 🤍</button>
+                        <button onclick="changeTheme('birthday')" class="py-2 px-1 bg-[#FEFEE3] text-[#74572E] rounded-2xl text-xs font-bold border-2 border-[#F9ECC4] hover:bg-[#F9ECC4] transition-all">Birthday</button>
+                    </div>
+                </div>
+
+                <!-- Form Isian -->
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">Nama Penerima (To):</label>
+                        <input type="text" id="inputTo" oninput="updateCard()" placeholder="Contoh: Dear, Nabila..." class="w-full px-4 py-2 rounded-xl border-2 border-[#D6EFE0] focus:outline-none focus:border-emerald-400 bg-white text-emerald-900">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">Isi Pesan:</label>
+                        <textarea id="inputMessage" oninput="updateCard()" rows="3" placeholder="Tulis isi ucapan tulusmu di sini..." class="w-full px-4 py-2 rounded-xl border-2 border-[#D6EFE0] focus:outline-none focus:border-emerald-400 bg-white text-emerald-900"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">Nama Pengirim (From):</label>
+                        <input type="text" id="inputFrom" oninput="updateCard()" placeholder="Contoh: Dari Sahabatmu ✨" class="w-full px-4 py-2 rounded-xl border-2 border-[#D6EFE0] focus:outline-none focus:border-emerald-400 bg-white text-emerald-900">
+                    </div>
+                </div>
+
+                <!-- Pilihan Warna Pastel -->
+                <div>
+                    <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Warna Latar Kartu:</label>
+                    <div class="flex flex-wrap gap-2.5">
+                        <button onclick="changeBg('#E8F5E9', '🌿')" class="w-8 h-8 rounded-full bg-[#E8F5E9] border-2 border-emerald-400 shadow-sm" title="Soft Mint"></button>
+                        <button onclick="changeBg('#C8E6C9', '🍃')" class="w-8 h-8 rounded-full bg-[#C8E6C9] border border-emerald-300 shadow-sm" title="Sage Green"></button>
+                        <button onclick="changeBg('#D1E7DD', '🌱')" class="w-8 h-8 rounded-full bg-[#D1E7DD] border border-emerald-200 shadow-sm" title="Teal Light"></button>
+                        <button onclick="changeBg('#FCE4EC', '🌸')" class="w-8 h-8 rounded-full bg-[#FCE4EC] border border-pink-200 shadow-sm" title="Coquette Pink"></button>
+                        <button onclick="changeBg('#FFF9C4', '✨')" class="w-8 h-8 rounded-full bg-[#FFF9C4] border border-yellow-200 shadow-sm" title="Soft Yellow"></button>
+                        <button onclick="changeBg('#E3F2FD', '💙')" class="w-8 h-8 rounded-full bg-[#E3F2FD] border border-blue-200 shadow-sm" title="Sky Blue"></button>
+                        <button onclick="changeBg('#F3E5F5', '💜')" class="w-8 h-8 rounded-full bg-[#F3E5F5] border border-purple-200 shadow-sm" title="Soft Purple"></button>
+                    </div>
+                </div>
+
+                <!-- Tombol Download Otomatis -->
+                <button onclick="downloadCard()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl font-bold shadow-md transition-all flex items-center justify-center gap-2 transform active:scale-95 cursor-pointer">
+                    <span>🎀</span> Simpan Kartu (PNG)
+                </button>
+            </section>
+
+            <!-- Preview Kartu Kaligrafi (Kanan) -->
+            <section class="flex justify-center">
+                <div id="cardPreview" class="w-full max-w-sm aspect-[3/4] bg-[#E8F5E9] rounded-[2.5rem] shadow-xl p-8 border-[6px] border-white flex flex-col justify-between text-center relative overflow-hidden">
+                    
+                    <!-- Renda Atas -->
+                    <div class="lace-border absolute top-0 left-0 right-0 h-3"></div>
+                    
+                    <!-- Dekorasi Bunga Sudut Kecil -->
+                    <span class="absolute top-4 left-4 text-xs opacity-40">🌸</span>
+                    <span class="absolute top-4 right-4 text-xs opacity-40">🌸</span>
+                    <span class="absolute bottom-4 left-4 text-xs opacity-40">🌿</span>
+                    <span class="absolute bottom-4 right-4 text-xs opacity-40">🌿</span>
+
+                    <!-- Atas Kartu -->
+                    <div class="mt-4">
+                        <div id="cardIcon" class="text-3xl mb-1">🌿</div>
+                        <h3 id="cardTitle" class="font-script text-5xl text-emerald-900 leading-none py-1">Thank You</h3>
+                        <div class="text-[10px] text-emerald-700/40 tracking-widest mt-1">❀ ─── 🎀 ─── ❀</div>
+                    </div>
+
+                    <!-- Tengah Kartu (Isi) -->
+                    <div class="my-auto space-y-4 px-2">
+                        <p id="cardTo" class="font-script text-3xl text-emerald-800 border-b-2 border-dashed border-emerald-200 pb-1">Untuk seseorang yang spesial</p>
+                        <p id="cardMessage" class="text-emerald-900 text-sm font-medium leading-relaxed font-sans">"Terima kasih telah menjadi bagian terbaik dalam perjalanan hidup ini."</p>
+                    </div>
+
+                    <!-- Bawah Kartu -->
+                    <div class="mb-4">
+                        <div class="text-xs text-emerald-600/40 mb-1">🩰 🩰 🩰</div>
+                        <p id="cardFrom" class="font-script text-3xl text-emerald-800">Dengan penuh cinta 🤍</p>
+                    </div>
+
+                    <!-- Renda Bawah -->
+                    <div class="lace-border absolute bottom-0 left-0 right-0 h-3 rotate-180"></div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="mt-12 text-center text-[10px] text-emerald-800/50 tracking-widest uppercase">
+            <p>🎀 Coquette Garden Creator 2026 🌿</p>
+        </footer>
+    </div>
+
+
+    <!-- ================= LOGIKA JAVASCRIPT INTERAKTIF ================= -->
+    <script>
+        // 1. Membuat efek kelopak bunga berguguran pada Opening secara acak
+        const container = document.getElementById('petalContainer');
+        const emojis = ['🌸', '💮', '🌹', '🍃', '🌿'];
+        
+        for (let i = 0; i < 30; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'absolute text-sm pointer-events-none';
+            petal.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            // Mengatur posisi dan animasi acak agar terlihat natural
+            petal.style.left = Math.random() * 100 + '%';
+            petal.style.top = Math.random() * -20 + '%';
+            petal.style.fontSize = (Math.random() * 14 + 10) + 'px';
+            petal.style.animation = `v-fall ${Math.random() * 5 + 4}s linear infinite`;
+            petal.style.animationDelay = Math.random() * 5 + 's';
+            
+            container.appendChild(petal);
+        }
+
+        // 2. Fungsi Transisi Masuk Website saat tombol diklik
+        function enterWebsite() {
+            const opening = document.getElementById('openingScreen');
+            const main = document.getElementById('mainContent');
+            
+            opening.classList.add('opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                opening.style.display = 'none';
+                main.classList.remove('hidden');
+                setTimeout(() => {
+                    main.classList.add('opacity-100');
+                }, 50);
+            }, 1000);
+        }
+
+        // 3. Update Teks Kartu Secara Real-time
+        function updateCard() {
+            const to = document.getElementById('inputTo').value;
+            const message = document.getElementById('inputMessage').value;
+            const from = document.getElementById('inputFrom').value;
+
+            document.getElementById('cardTo').innerText = to ? to : "Untuk seseorang yang spesial";
+            document.getElementById('cardMessage').innerText = message ? `"${message}"` : "Tulis isi ucapan tulusmu di sini...";
+            document.getElementById('cardFrom').innerText = from ? from : "Dengan penuh cinta 🤍";
+        }
+
+        // 4. Mengubah Tema Kategori Ucapan
+        function changeTheme(type) {
+            const title = document.getElementById('cardTitle');
+            if (type === 'thanks') title.innerText = "Thank You";
+            else if (type === 'love') title.innerText = "With Love";
+            else if (type === 'birthday') title.innerText = "Happy Birthday";
+        }
+
+        // 5. Mengubah Warna Latar Belakang Kartu & Emojinya
+        function changeBg(color, icon) {
+            document.getElementById('cardPreview').style.backgroundColor = color;
+            document.getElementById('cardIcon').innerText = icon;
+        }
+
+        // 6. Fitur Unduh Otomatis Menjadi Gambar PNG
+        function downloadCard() {
+            const card = document.getElementById('cardPreview');
+            html2canvas(card, {
+                scale: 3,
+                backgroundColor: null,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Kartu_Ucapan_Coquette.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(error => {
+                console.error('Error generating image:', error);
+                alert('Terjadi kesalahan saat menyimpan kartu. Silakan coba lagi.');
+            });
+        }
+    </script>
+</body>
+</html>
